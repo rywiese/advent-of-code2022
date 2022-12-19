@@ -1,6 +1,7 @@
 module Day1 where
 
 import Control.Exception
+import Data.List
 import System.FilePath ((</>))
 import System.IO
 
@@ -23,11 +24,17 @@ totalCalories (Elf _ caloriesList) = sum caloriesList
 day1InputFile :: FilePath
 day1InputFile = "/Users/ry/advent-of-code/advent-of-code2022/res" </> "day1.in"
 
-day1 :: IO ()
-day1 = do
+day1part1 :: IO ()
+day1part1 = do
     elfHandle <- System.IO.openFile day1InputFile ReadMode
     elves <- readElves elfHandle
     System.IO.print (totalCalories (maximum elves))
+
+day1part2 :: IO ()
+day1part2 = do
+    elfHandle <- System.IO.openFile day1InputFile ReadMode
+    elves <- readElves elfHandle
+    System.IO.print (sum ((map totalCalories .take 3 . reverse . Data.List.sort) elves))
 
 readElves :: Handle -> IO [Elf]
 readElves elfHandle = readElves' elfHandle 0
