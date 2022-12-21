@@ -27,6 +27,7 @@ library
   exposed-modules:
       Day1
       Day2
+      IOHelpers
       Lib
   other-modules:
       Paths_advent_of_code2022

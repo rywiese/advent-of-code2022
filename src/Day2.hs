@@ -1,18 +1,21 @@
 module Day2 where
 
-import Control.Exception
 import Data.Proxy
+import IOHelpers
 import System.FilePath ((</>))
 import System.IO
 
 class Scorable a where
     score :: a -> Int
 
-class CharRepresentable a where
-    fromChar :: Char -> a
-
 class Scorable a => Interpretation a where
     fromChars :: Char -> Char -> a
+    fromString :: String -> a
+    fromString line = let [char1, _, char2] = take 3 line in
+        fromChars char1 char2
+
+class CharRepresentable a where
+    fromChar :: Char -> a
 
 data Shape = Rock | Paper | Scissors
 
@@ -98,18 +101,5 @@ day2part2 = day2 (Proxy :: Proxy Playbook)
 day2 :: forall proxy a. Interpretation a => proxy a -> IO ()
 day2 _ = do
     handle <- System.IO.openFile day2InputFile ReadMode
-    results :: [a] <- parseFile handle
+    results :: [a] <- collectLinesBy fromString handle
     System.IO.print (totalScore results)
-
-parseFile :: Interpretation a => Handle -> IO [a]
-parseFile handle = do
-    lineEither :: Either IOError String <- Control.Exception.try (System.IO.hGetLine handle)
-    case lineEither of
-        Right line -> do
-            rest <- parseFile handle
-            return (parseLine line : rest)
-        _ -> return []
-
-parseLine :: Interpretation a => String -> a
-parseLine line = let [char1, _, char2] = take 3 line in
-    fromChars char1 char2
