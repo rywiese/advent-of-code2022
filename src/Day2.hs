@@ -99,7 +99,4 @@ day2part2 :: IO ()
 day2part2 = day2 (Proxy :: Proxy Playbook)
 
 day2 :: forall proxy a. Interpretation a => proxy a -> IO ()
-day2 _ = do
-    handle <- System.IO.openFile day2InputFile ReadMode
-    results :: [a] <- collectLinesBy fromString handle
-    System.IO.print (totalScore results)
+day2 _ = parseAndSolve 2 (fromString :: String -> a) totalScore
