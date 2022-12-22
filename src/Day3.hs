@@ -4,10 +4,6 @@ import Data.Char
 import Data.List
 import Data.List.Split
 import IOHelpers
-import System.FilePath ((</>))
-
-day3InputFile :: FilePath
-day3InputFile = "/Users/ry/advent-of-code/advent-of-code2022/res" </> "day3.in"
 
 type ItemType = Char
 
