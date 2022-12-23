@@ -29,6 +29,7 @@ library
       Day2
       Day3
       Day4
+      Day5
       IOHelpers
       Lib
   other-modules:
@@ -40,6 +41,7 @@ library
       base >=4.7 && <5
     , containers
     , filepath >=1.4.2.2
+    , ilist
     , split
   default-language: Haskell2010
 
@@ -55,6 +57,7 @@ executable advent-of-code2022-exe
     , base >=4.7 && <5
     , containers
     , filepath >=1.4.2.2
+    , ilist
     , split
   default-language: Haskell2010
 
@@ -71,5 +74,6 @@ test-suite advent-of-code2022-test
     , base >=4.7 && <5
     , containers
     , filepath >=1.4.2.2
+    , ilist
     , split
   default-language: Haskell2010
