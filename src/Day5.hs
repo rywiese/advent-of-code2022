@@ -34,8 +34,25 @@ crateMover9000 n s1 s2 = if n <= 0
     else let (s1', s2') = moveCrateFromTo s1 s2 in
         crateMover9000 (n - 1) s1' s2'
 
+moveCrateFromTo :: Stack -> Stack -> (Stack, Stack)
+moveCrateFromTo s1 s2 = case s1 of
+    [] -> (s1, s2)
+    h:t -> (t, h:s2)
+
+crateMover9001 :: CraneStrategy
+crateMover9001 n s1 s2 = if n <= 0
+    then (s1, s2)
+    else let (toMove, toStay) = splitAt n s1 in
+        (toStay, toMove ++ s2)
+
 day5part1 :: IO ()
-day5part1 = parseAndSolve 5 id (solve crateMover9000)
+day5part1 = parseAndSolve 5 id (solveAndFormat crateMover9000)
+
+day5part2 :: IO ()
+day5part2 = parseAndSolve 5 id (solveAndFormat crateMover9001)
+
+solveAndFormat :: CraneStrategy -> [String] -> String
+solveAndFormat cs = map (\(Just a) -> a) . solve cs
 
 solve :: CraneStrategy -> [String] -> [Maybe Crate]
 solve craneStrategy = applyAndGetTops craneStrategy . parseProblem
@@ -53,11 +70,6 @@ moveCratePer :: CraneStrategy -> Instruction -> [Stack] -> [Stack]
 moveCratePer craneStrategy (Instruction { quantity=q, source=s, dest=d }) stacks =
     let (ss, sd) = craneStrategy q (stacks !! (s - 1)) (stacks !! (d - 1)) in
         (setAt (d - 1) sd . setAt (s - 1) ss) stacks
-
-moveCrateFromTo :: Stack -> Stack -> (Stack, Stack)
-moveCrateFromTo s1 s2 = case s1 of
-    [] -> (s1, s2)
-    h:t -> (t, h:s2)
 
 parseProblem :: [String] -> Problem
 parseProblem lines = Problem { stacks=stackies, instructions=instructies } where
