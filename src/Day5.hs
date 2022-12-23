@@ -26,30 +26,33 @@ data Problem = Problem
     , instructions :: [Instruction]
     } deriving (Show)
 
-day5part1 :: IO ()
-day5part1 = parseAndSolve 5 id solve
+type CraneStrategy = Int -> Stack -> Stack -> (Stack, Stack)
 
-solve :: [String] -> [Maybe Crate]
-solve = applyAndGetTops . parseProblem
-
-applyAndGetTops :: Problem -> [Maybe Crate]
-applyAndGetTops = map listToMaybe . apply
-
-apply :: Problem -> [Stack]
-apply (Problem { stacks=stackies, instructions=[] }) = stackies
-apply (Problem { stacks=stackies, instructions=firstInstruction:t }) = apply
-    (Problem { stacks=moveCratePer firstInstruction stackies, instructions=t})
-
-moveCratePer :: Instruction -> [Stack] -> [Stack]
-moveCratePer (Instruction { quantity=q, source=s, dest=d }) stacks =
-    let (ss, sd) = moveCratesFromTo q (stacks !! (s - 1)) (stacks !! (d - 1)) in
-        (setAt (d - 1) sd . setAt (s - 1) ss) stacks
-
-moveCratesFromTo :: Int -> Stack -> Stack -> (Stack, Stack)
-moveCratesFromTo n s1 s2 = if n <= 0
+crateMover9000 :: CraneStrategy
+crateMover9000 n s1 s2 = if n <= 0
     then (s1, s2)
     else let (s1', s2') = moveCrateFromTo s1 s2 in
-        moveCratesFromTo (n - 1) s1' s2'
+        crateMover9000 (n - 1) s1' s2'
+
+day5part1 :: IO ()
+day5part1 = parseAndSolve 5 id (solve crateMover9000)
+
+solve :: CraneStrategy -> [String] -> [Maybe Crate]
+solve craneStrategy = applyAndGetTops craneStrategy . parseProblem
+
+applyAndGetTops :: CraneStrategy -> Problem -> [Maybe Crate]
+applyAndGetTops craneStrategy = map listToMaybe . apply craneStrategy
+
+apply :: CraneStrategy -> Problem -> [Stack]
+apply _ (Problem { stacks=stackies, instructions=[] }) = stackies
+apply craneStrategy (Problem { stacks=stackies, instructions=firstInstruction:t }) = apply
+    craneStrategy 
+    (Problem { stacks=moveCratePer craneStrategy firstInstruction stackies, instructions=t})
+
+moveCratePer :: CraneStrategy -> Instruction -> [Stack] -> [Stack]
+moveCratePer craneStrategy (Instruction { quantity=q, source=s, dest=d }) stacks =
+    let (ss, sd) = craneStrategy q (stacks !! (s - 1)) (stacks !! (d - 1)) in
+        (setAt (d - 1) sd . setAt (s - 1) ss) stacks
 
 moveCrateFromTo :: Stack -> Stack -> (Stack, Stack)
 moveCrateFromTo s1 s2 = case s1 of
